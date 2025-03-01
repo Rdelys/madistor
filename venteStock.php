@@ -372,6 +372,13 @@ button:hover {
     background-color: #0056b3;
 }
 
+.final {
+    padding: 8px;
+    width: 100px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    text-align: center;
+}
   </style>
 </head>
 <body>
@@ -432,6 +439,7 @@ button:hover {
   <table border="1">
         <thead>
             <tr>
+              <th>Sélection</th>
                 <th>Marque</th>
                 <th>Modèle</th>
                 <th>RAM</th>
@@ -440,6 +448,7 @@ button:hover {
                 <th>Accessoire</th>
                 <th>Prix d'achat</th>
                 <th>Prix de vente</th>
+                <th>Prix de vente final</th> <!-- Nouvelle colonne -->
             </tr>
         </thead>
         <tbody>
@@ -448,14 +457,8 @@ button:hover {
     $sql = "SELECT * FROM ordinateurs";
     $result = $pdo->query($sql);
     while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
-        echo "<tr data-marque='{$row['marque']}' 
-                    data-modele='{$row['modele']}' 
-                    data-ram='{$row['ram']}' 
-                    data-disque_dur='{$row['disque_dur']}' 
-                    data-graphique='{$row['graphique']}' 
-                    data-accessoire='{$row['accessoire']}' 
-                    data-prixAchat='{$row['prixAchat']}' 
-                    data-prixVente='{$row['prixVente']}'>
+        echo "<tr>
+                <td><input type='checkbox' name='selectOrdinateur[]' value='{$row['id']}'></td>
                 <td>{$row['marque']}</td>
                 <td>{$row['modele']}</td>
                 <td>{$row['ram']}</td>
@@ -464,6 +467,7 @@ button:hover {
                 <td>{$row['accessoire']}</td>
                 <td>{$row['prixAchat']}</td>
                 <td>{$row['prixVente']}</td>
+                <td><input type='text' class='final' name='prixVenteFinal[]' value='' placeholder='Prix Final'></td> <!-- Champ input -->
               </tr>";
     }
     ?>
@@ -480,10 +484,12 @@ button:hover {
     <table border="1">
         <thead>
             <tr>
+                <th>Sélection</th>
                 <th>Marque</th>
                 <th>Description</th>
                 <th>Prix d'achat</th>
                 <th>Prix de vente</th>
+                <th>Prix de vente final</th> <!-- Nouvelle colonne -->
             </tr>
         </thead>
         <tbody>
@@ -492,14 +498,13 @@ button:hover {
     $sql = "SELECT * FROM autres_materiels";
     $result = $pdo->query($sql);
     while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
-        echo "<tr data-marque='{$row['marque']}' 
-                    data-description='{$row['description']}' 
-                    data-prixAchat='{$row['prixAchat']}' 
-                    data-prixVente='{$row['prixVente']}'>
+        echo "<tr>
+                <td><input type='checkbox' name='selectAutres[]' value='{$row['id']}'></td>
                 <td>{$row['marque']}</td>
                 <td>{$row['description']}</td>
                 <td>{$row['prixAchat']}</td>
                 <td>{$row['prixVente']}</td>
+                <td><input type='text' class='final' name='prixVenteFinal[]' value='' placeholder='Prix Final'></td> <!-- Champ input -->
               </tr>";
     }
     ?>
@@ -508,38 +513,6 @@ button:hover {
     </table>
 </div>
 </div>
-<!-- Modal pour Ordinateurs -->
-<div id="modalOrdinateur" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeModal('modalOrdinateur')">&times;</span>
-        <h2>Informations Ordinateur</h2>
-        <p><strong>Marque:</strong> <span id="modalMarqueOrdinateur"></span></p>
-        <p><strong>Modèle:</strong> <span id="modalModeleOrdinateur"></span></p>
-        <p><strong>RAM:</strong> <span id="modalRamOrdinateur"></span></p>
-        <p><strong>Disque Dur:</strong> <span id="modalDisqueDurOrdinateur"></span></p>
-        <p><strong>Graphique:</strong> <span id="modalGraphiqueOrdinateur"></span></p>
-        <p><strong>Accessoire:</strong> <span id="modalAccessoireOrdinateur"></span></p>
-        <p><strong>Prix d'achat:</strong> <span id="modalPrixAchatOrdinateur"></span></p>
-        <p><strong>Prix de vente:</strong> <span id="modalPrixVenteOrdinateur"></span></p>
-        <input type="number" id="prixVenteFinalOrdinateur" placeholder="Prix de vente final">
-        <button class="btn" onclick="enregistrerPrix('Ordinateur')">Enregistrer</button>
-    </div>
-</div>
-
-<!-- Modal pour Autres Matériels -->
-<div id="modalAutres" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeModal('modalAutres')">&times;</span>
-        <h2>Informations Autres Matériels</h2>
-        <p><strong>Marque:</strong> <span id="modalMarqueAutres"></span></p>
-        <p><strong>Description:</strong> <span id="modalDescriptionAutres"></span></p>
-        <p><strong>Prix d'achat:</strong> <span id="modalPrixAchatAutres"></span></p>
-        <p><strong>Prix de vente:</strong> <span id="modalPrixVenteAutres"></span></p>
-        <input type="number" id="prixVenteFinalAutres" placeholder="Prix de vente final">
-        <button class="btn" onclick="enregistrerPrix('Autres')">Enregistrer</button>
-    </div>
-</div>
-
   <script>
     // Fonction pour filtrer les lignes des tableaux en fonction de la barre de recherche
 // Fonction pour filtrer les lignes des tableaux en fonction de la barre de recherche
@@ -613,95 +586,77 @@ function searchTable(type) {
     document.getElementById('ordinateurList').style.display = (listId === 'ordinateurList') ? 'block' : 'none';
     document.getElementById('autresList').style.display = (listId === 'autresList') ? 'block' : 'none';
   }
-
+  
   function transferer(type) {
-    let selectedIds = [];
-    document.querySelectorAll(`input[name='select${type.charAt(0).toUpperCase() + type.slice(1)}[]']:checked`).forEach((checkbox) => {
-        selectedIds.push(checkbox.value);
-    });
+  var selectedItems = [];
+  var finalPrices = [];
+  
+  // Sélection des éléments en fonction du type (ordinateurs ou autres matériels)
+  var checkboxes;
+  var finalPriceInputs;
+  if (type === 'ordinateur') {
+    checkboxes = document.querySelectorAll('input[name="selectOrdinateur[]"]:checked');
+    finalPriceInputs = document.querySelectorAll('input[name="prixVenteFinal[]"]');
+  } else {
+    checkboxes = document.querySelectorAll('input[name="selectAutres[]"]:checked');
+    finalPriceInputs = document.querySelectorAll('input[name="prixVenteFinal[]"]');
+  }
 
-    if (selectedIds.length === 0) {
-        alert("Veuillez sélectionner au moins un élément à transférer.");
-        return;
+  // Debugging: Log the checkboxes and price inputs
+  console.log('Checkboxes:', checkboxes);
+  console.log('Final Price Inputs:', finalPriceInputs);
+  
+  checkboxes.forEach((checkbox, index) => {
+    var row = checkbox.closest('tr'); // Trouve la ligne correspondante
+    var finalPrice = finalPriceInputs[index].value; // Récupère le prix final
+
+    console.log('Row:', row);
+    console.log('Final Price:', finalPrice);
+
+    if (finalPrice) {  // Si le prix final est renseigné
+      var item = {
+        id: checkbox.value, // Ajoute l'ID de l'article sélectionné
+        prixFinal: finalPrice
+      };
+
+      // Récupère les autres informations selon le type de matériel
+      if (type === 'ordinateur') {
+        item.marque = row.cells[1].innerText;
+        item.modele = row.cells[2].innerText;
+        item.ram = row.cells[3].innerText;
+        item.disqueDur = row.cells[4].innerText;
+        item.graphique = row.cells[5].innerText;
+        item.accessoire = row.cells[6].innerText;
+        item.prixAchat = row.cells[7].innerText;
+        item.prixVente = row.cells[8].innerText;
+      } else {
+        item.marque = row.cells[1].innerText;
+        item.description = row.cells[2].innerText;
+        item.prixAchat = row.cells[3].innerText;
+        item.prixVente = row.cells[4].innerText;
+      }
+
+      selectedItems.push(item);
     }
+  });
 
-    // Envoyer les données sélectionnées via AJAX
-    let xhr = new XMLHttpRequest();
-    xhr.open("POST", "transferer.php", true);
-    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+  if (selectedItems.length > 0) {
+    // Envoi des données via AJAX
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', 'transfert.php', true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
     xhr.onreadystatechange = function() {
-        if (xhr.readyState == 4 && xhr.status == 200) {
-            alert(xhr.responseText);  // Affiche le message du serveur (par exemple, succès ou erreur)
-        }
+      if (xhr.readyState === 4 && xhr.status === 200) {
+        alert('Transfert réussi!');
+        location.reload(); // Recharger la page après un transfert réussi
+      }
     };
-
-    // Créer la chaîne de paramètres pour AJAX
-    let params = `type=${type}&ids=${JSON.stringify(selectedIds)}`;
-    xhr.send(params);
+    xhr.send(JSON.stringify({ items: selectedItems, type: type }));
+  } else {
+    alert('Veuillez sélectionner des articles et entrer un prix final.');
+  }
 }
 
-// Fonction pour ouvrir le modal et afficher les informations
-function openModal(type, row) {
-    let modalId = type === 'Ordinateur' ? 'modalOrdinateur' : 'modalAutres';
-    let modal = document.getElementById(modalId);
-    modal.style.display = "block";
-
-    // Pour Ordinateur
-    if (type === 'Ordinateur') {
-    document.getElementById('modalMarqueOrdinateur').textContent = row['marque'];
-    document.getElementById('modalModeleOrdinateur').textContent = row['modele'];
-    document.getElementById('modalRamOrdinateur').textContent = row['ram'];
-    document.getElementById('modalDisqueDurOrdinateur').textContent = row['disque_dur'];
-    document.getElementById('modalGraphiqueOrdinateur').textContent = row['graphique'];
-    document.getElementById('modalAccessoireOrdinateur').textContent = row['accessoire'];
-    document.getElementById('modalPrixAchatOrdinateur').textContent = row['prixAchat'];
-    document.getElementById('modalPrixVenteOrdinateur').textContent = row['prixVente'];
-
-    console.log("Prix d'achat:", row['prixAchat']);
-    console.log("Prix de vente:", row['prixVente']);
-}
-
-    // Pour Autres Matériels
-    else if (type === 'Autres') {
-        document.getElementById('modalMarqueAutres').textContent = row['marque'];
-        document.getElementById('modalDescriptionAutres').textContent = row['description'];
-        document.getElementById('modalPrixAchatAutres').textContent = row['prixAchat'];
-        document.getElementById('modalPrixVenteAutres').textContent = row['prixVente'];
-    }
-}
-
-// Fonction pour fermer le modal
-function closeModal(modalId) {
-    document.getElementById(modalId).style.display = "none";
-}
-
-// Fonction pour enregistrer le prix de vente final
-function enregistrerPrix(type) {
-    let prixVenteFinalInput = type === 'Ordinateur' ? document.getElementById('prixVenteFinalOrdinateur') : document.getElementById('prixVenteFinalAutres');
-    let prixVenteFinal = prixVenteFinalInput.value;
-
-    if (!prixVenteFinal) {
-        alert('Veuillez entrer un prix de vente final.');
-        return;
-    }
-
-    // Vous pouvez envoyer ce prix au serveur avec AJAX pour le mettre à jour dans la base de données
-    alert(`Prix de vente final pour ${type} enregistré: ${prixVenteFinal}`);
-    closeModal(type === 'Ordinateur' ? 'modalOrdinateur' : 'modalAutres');
-}
-
-// Ajout des événements sur les lignes de tableau pour ouvrir le modal
-document.querySelectorAll("#ordinateurList tbody tr").forEach(function(row) {
-    row.addEventListener("click", function() {
-        openModal('Ordinateur', row.dataset);  // Assurez-vous de transmettre les bonnes données
-    });
-});
-
-document.querySelectorAll("#autresList tbody tr").forEach(function(row) {
-    row.addEventListener("click", function() {
-        openModal('Autres', row.dataset);  // Assurez-vous de transmettre les bonnes données
-    });
-});
 
 
   </script>

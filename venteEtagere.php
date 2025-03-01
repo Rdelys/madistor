@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ventes Etagères</title>
+  <title>Vente Etagere</title>
   <style>
     body {
       margin: 0;
@@ -309,6 +309,76 @@ tbody tr:last-child td {
     button:hover {
         background-color: #45a049;
     }
+
+   /* Style pour le modal */
+.modal {
+    display: none; /* Masquer par défaut */
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    overflow: auto;
+    padding-top: 60px;
+}
+
+.modal-content {
+    background-color: #fff;
+    margin: 5% auto;
+    padding: 20px;
+    border-radius: 10px;
+    width: 80%;
+    max-width: 500px;
+}
+
+.close {
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+    position: absolute;
+    top: 10px;
+    right: 25px;
+    color: #333;
+    cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+    color: #000;
+    text-decoration: none;
+}
+
+input[type="number"] {
+    padding: 10px;
+    margin-top: 10px;
+    width: 50%;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+button {
+    padding: 10px 20px;
+    margin-top: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+.final {
+    padding: 8px;
+    width: 100px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    text-align: center;
+}
   </style>
 </head>
 <body>
@@ -356,16 +426,20 @@ tbody tr:last-child td {
   <div class="content">
     <!-- Liste Stock Section -->
     <div id="listStock" class="section">
-      <h2>Liste des matériels sur les étageres.</h2>
+      <h2>Liste des matériels sur étagères</h2>
       <button class="btn" onclick="toggleList('ordinateurList')">Ordinateurs</button>
       <button class="btn" onclick="toggleList('autresList')">Autres Matériels</button>
 
       <div id="ordinateurList" class="stock-list" style="display: none;">
     <h3>Liste des Ordinateurs</h3>
-    <input type="text" id="searchOrdinateurs" onkeyup="searchTable('ordinateur')" placeholder="Rechercher dans la liste des ordinateurs" class="search-bar">    
+    <input type="text" id="searchOrdinateurs" onkeyup="searchTable('ordinateur')" placeholder="Rechercher dans la liste des ordinateurs" class="search-bar">
+    <button onclick="transferer('ordinateur')" style="background-color: #4CAF50; color: white; padding: 15px 32px; text-align: center; font-size: 16px; border: none; border-radius: 4px; cursor: pointer; transition: background-color 0.3s ease;">
+    Transférer
+    </button>    
   <table border="1">
         <thead>
             <tr>
+              <th>Sélection</th>
                 <th>Marque</th>
                 <th>Modèle</th>
                 <th>RAM</th>
@@ -374,56 +448,68 @@ tbody tr:last-child td {
                 <th>Accessoire</th>
                 <th>Prix d'achat</th>
                 <th>Prix de vente</th>
+                <th>Prix de vente final</th> <!-- Nouvelle colonne -->
             </tr>
         </thead>
         <tbody>
-            <?php
-            require 'connexion.php';
-            $sql = "SELECT * FROM ordinateurs_etagere";
-            $result = $pdo->query($sql);
-            while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
-                echo "<tr>
-                        <td>{$row['marque']}</td>
-                        <td>{$row['modele']}</td>
-                        <td>{$row['ram']}</td>
-                        <td>{$row['disque_dur']}</td>
-                        <td>{$row['graphique']}</td>
-                        <td>{$row['accessoire']}</td>
-                        <td>{$row['prixAchat']}</td>
-                        <td>{$row['prixVente']}</td>
-                      </tr>";
-            }
-            ?>
-        </tbody>
+    <?php
+                require 'connexion.php';
+    $sql = "SELECT * FROM ordinateurs_etagere";
+    $result = $pdo->query($sql);
+    while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+        echo "<tr>
+                <td><input type='checkbox' name='selectOrdinateur[]' value='{$row['id']}'></td>
+                <td>{$row['marque']}</td>
+                <td>{$row['modele']}</td>
+                <td>{$row['ram']}</td>
+                <td>{$row['disque_dur']}</td>
+                <td>{$row['graphique']}</td>
+                <td>{$row['accessoire']}</td>
+                <td>{$row['prixAchat']}</td>
+                <td>{$row['prixVente']}</td>
+                <td><input type='text' class='final' name='prixVenteFinal[]' value='' placeholder='Prix Final'></td> <!-- Champ input -->
+              </tr>";
+    }
+    ?>
+</tbody>
+
     </table>
 </div>
 
 <div id="autresList" class="stock-list" style="display: none;">
     <h3>Liste des Autres Matériels</h3>
     <input type="text" id="searchAutres" onkeyup="searchTable('autres')" placeholder="Rechercher dans la liste des autres matériels" class="search-bar">
+    <button onclick="transferer('autres')" style="background-color: #4CAF50; color: white; padding: 15px 32px; text-align: center; font-size: 16px; border: none; border-radius: 4px; cursor: pointer; transition: background-color 0.3s ease;">
+      Transférer</button>
     <table border="1">
         <thead>
             <tr>
+                <th>Sélection</th>
                 <th>Marque</th>
                 <th>Description</th>
                 <th>Prix d'achat</th>
                 <th>Prix de vente</th>
+                <th>Prix de vente final</th> <!-- Nouvelle colonne -->
             </tr>
         </thead>
         <tbody>
-            <?php
-            $sql = "SELECT * FROM autres_materiels_etagere";
-            $result = $pdo->query($sql);
-            while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
-                echo "<tr>
-                        <td>{$row['marque']}</td>
-                        <td>{$row['description']}</td>
-                        <td>{$row['prixAchat']}</td>
-                        <td>{$row['prixVente']}</td>
-                      </tr>";
-            }
-            ?>
-        </tbody>
+    <?php
+    require 'connexion.php';
+    $sql = "SELECT * FROM autres_materiels_etagere";
+    $result = $pdo->query($sql);
+    while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+        echo "<tr>
+                <td><input type='checkbox' name='selectAutres[]' value='{$row['id']}'></td>
+                <td>{$row['marque']}</td>
+                <td>{$row['description']}</td>
+                <td>{$row['prixAchat']}</td>
+                <td>{$row['prixVente']}</td>
+                <td><input type='text' class='final' name='prixVenteFinal[]' value='' placeholder='Prix Final'></td> <!-- Champ input -->
+              </tr>";
+    }
+    ?>
+</tbody>
+
     </table>
 </div>
 </div>
@@ -500,6 +586,70 @@ function searchTable(type) {
     document.getElementById('ordinateurList').style.display = (listId === 'ordinateurList') ? 'block' : 'none';
     document.getElementById('autresList').style.display = (listId === 'autresList') ? 'block' : 'none';
   }
+  
+  function transferer(type) {
+  var selectedItems = [];
+  var checkboxes;
+  var finalPriceInputs;
+
+  // Sélection des éléments en fonction du type (ordinateurs ou autres matériels)
+  if (type === 'ordinateur') {
+    checkboxes = document.querySelectorAll('input[name="selectOrdinateur[]"]:checked');
+    finalPriceInputs = document.querySelectorAll('input[name="prixVenteFinal[]"]'); // Récupérer tous les champs "prix final"
+  } else {
+    checkboxes = document.querySelectorAll('input[name="selectAutres[]"]:checked');
+    finalPriceInputs = document.querySelectorAll('input[name="prixVenteFinal[]"]'); // Récupérer tous les champs "prix final"
+  }
+
+  // Parcourir toutes les cases à cocher sélectionnées
+  checkboxes.forEach((checkbox, index) => {
+    var row = checkbox.closest('tr'); // Trouver la ligne de la case à cocher sélectionnée
+    var finalPrice = finalPriceInputs[index].value; // Récupérer le prix final de la ligne correspondante
+
+    if (finalPrice) {  // Si un prix final est entré
+      var item = {
+        id: checkbox.value, // Ajouter l'ID de l'article sélectionné
+        prixFinal: finalPrice // Ajouter le prix final
+      };
+
+      // Récupérer les autres informations selon le type de matériel
+      if (type === 'ordinateur') {
+        item.marque = row.cells[1].innerText;
+        item.modele = row.cells[2].innerText;
+        item.ram = row.cells[3].innerText;
+        item.disqueDur = row.cells[4].innerText;
+        item.graphique = row.cells[5].innerText;
+        item.accessoire = row.cells[6].innerText;
+        item.prixAchat = row.cells[7].innerText;
+        item.prixVente = row.cells[8].innerText;
+      } else {
+        item.marque = row.cells[1].innerText;
+        item.description = row.cells[2].innerText;
+        item.prixAchat = row.cells[3].innerText;
+        item.prixVente = row.cells[4].innerText;
+      }
+
+      selectedItems.push(item); // Ajouter l'article sélectionné à la liste
+    }
+  });
+
+  // Vérifier si des articles ont été sélectionnés
+  if (selectedItems.length > 0) {
+    // Envoi des données via AJAX
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', 'transfertEtagere.php', true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState === 4 && xhr.status === 200) {
+        alert('Transfert réussi!');
+        location.reload(); // Recharger la page après un transfert réussi
+      }
+    };
+    xhr.send(JSON.stringify({ items: selectedItems, type: type }));
+  } else {
+    alert('Veuillez sélectionner des articles et entrer un prix final.');
+  }
+}
 
 
   </script>
