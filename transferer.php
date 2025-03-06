@@ -15,8 +15,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
             // Préparer l'insertion dans la table ordinateurs_etagere avec l'ID
-            $insert = "INSERT INTO ordinateurs_etagere (id, marque, modele, ram, disque_dur, graphique, accessoire, prixAchat, prixVente)
-                       VALUES (:id, :marque, :modele, :ram, :disque_dur, :graphique, :accessoire, :prixAchat, :prixVente)";
+            $insert = "INSERT INTO ordinateurs_etagere (id, marque, modele, ram, disque_dur, graphique, accessoire, prixAchat, prixVente, type)
+                       VALUES (:id, :marque, :modele, :ram, :disque_dur, :graphique, :accessoire, :prixAchat, :prixVente, :type)";
             $insertStmt = $pdo->prepare($insert);
             $insertStmt->execute([
                 'id' => $row['id'],  // Ajouter l'ID
@@ -27,7 +27,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 'graphique' => $row['graphique'],
                 'accessoire' => $row['accessoire'],
                 'prixAchat' => $row['prixAchat'],
-                'prixVente' => $row['prixVente']
+                'prixVente' => $row['prixVente'],
+                'type' => $row['type']
             ]);
         }
 
@@ -41,15 +42,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
             // Préparer l'insertion dans la table autres_materiels_etagere avec l'ID
-            $insert = "INSERT INTO autres_materiels_etagere (id, marque, description, prixAchat, prixVente)
-                       VALUES (:id, :marque, :description, :prixAchat, :prixVente)";
+            $insert = "INSERT INTO autres_materiels_etagere (id, marque, description, prixAchat, prixVente, type)
+                       VALUES (:id, :marque, :description, :prixAchat, :prixVente, :type)";
             $insertStmt = $pdo->prepare($insert);
             $insertStmt->execute([
                 'id' => $row['id'],  // Ajouter l'ID
                 'marque' => $row['marque'],
                 'description' => $row['description'],
                 'prixAchat' => $row['prixAchat'],
-                'prixVente' => $row['prixVente']
+                'prixVente' => $row['prixVente'],
+                'type' => $row['type']
             ]);
         }
 

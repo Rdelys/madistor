@@ -14,13 +14,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $accessoires = $_POST['accessoire'];
             $prixAchat = $_POST['prixAchat'];
             $prixVente = $_POST['prixVente'];
+            $type = $_POST['type'];
 
-            $sql = "INSERT INTO ordinateurs (marque, modele, ram, disque_dur, graphique, accessoire, prixAchat, prixVente) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+
+            $sql = "INSERT INTO ordinateurs (marque, modele, ram, disque_dur, graphique, accessoire, prixAchat, prixVente, type) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
             $stmt = $pdo->prepare($sql);
 
             for ($i = 0; $i < count($marques); $i++) {
-                $stmt->execute([$marques[$i], $modeles[$i], $rams[$i], $disques[$i], $graphiques[$i], $accessoires[$i], $prixAchat[$i], $prixVente[$i]]);
+                $stmt->execute([$marques[$i], $modeles[$i], $rams[$i], $disques[$i], $graphiques[$i], $accessoires[$i], $prixAchat[$i], $prixVente[$i], $type[$i]]);
             }
             $message = "ok"; // Succès
         }
@@ -30,12 +32,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $descriptions = $_POST['description'];
             $prixAchat = $_POST['prixAchat'];
             $prixVente = $_POST['prixVente'];
+            $type = $_POST['type'];
 
-            $sql = "INSERT INTO autres_materiels (marque, description, prixAchat, prixVente) VALUES (?, ?, ?, ?)";
+
+            $sql = "INSERT INTO autres_materiels (marque, description, prixAchat, prixVente, type) VALUES (?, ?, ?, ?, ?)";
             $stmt = $pdo->prepare($sql);
 
             for ($i = 0; $i < count($marques); $i++) {
-                $stmt->execute([$marques[$i], $descriptions[$i], $prixAchat[$i], $prixVente[$i]]);
+                $stmt->execute([$marques[$i], $descriptions[$i], $prixAchat[$i], $prixVente[$i], $type[$i]]);
             }
             $message = "ok"; // Succès
         }

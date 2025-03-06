@@ -10,7 +10,7 @@ if (!isset($_SESSION['user_id'])) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Etagères</title>
+  <title>Depenses</title>
   <style>
     body {
       margin: 0;
@@ -319,46 +319,8 @@ tbody tr:last-child td {
   </style>
 </head>
 <body>
-  <div class="navbar">
-    <div class="logo">
-      <img src="images/logo/logo.png" alt="Logo" onerror="this.style.display='none'">
-    </div>
-    <!-- Menu -->
-    <ul class="menu">
-      <li><a href="#dashboard">Dashboard</a></li>
-      <li class="dropdown">
-        <a href="#">Vente</a>
-        <div class="dropdown-content">
-          <a href="venteStock.php">Stock</a>
-          <a href="venteEtagere.php">Etagere</a>
-        </div>
-      </li>
-      <li class="dropdown">
-        <a href="#">Stock</a>
-        <div class="dropdown-content">
-            <a href="stock.php">Stock</a>
-            <a href="versEtagere.php">Vers l'étagere</a>
-        </div>
-      </li>
-      <li class="dropdown">
-        <a href="#">SAV</a>
-        <div class="dropdown-content">
-          <a href="#sav1">Sous-menu 1</a>
-          <a href="#sav2">Sous-menu 2</a>
-        </div>
-      </li>
-      <li class="dropdown">
-        <a href="etagere.php">Étagère</a>
-      </li>
-    </ul>
+<?php include('menu.php'); ?>
 
-    <!-- Hamburger Button -->
-    <div class="hamburger" onclick="toggleMenu()">
-      <div></div>
-      <div></div>
-      <div></div>
-    </div>
-  </div>
 
   <div class="content">
     <button class="btn" onclick="toggleSection('listStock')">Liste des depenses</button>

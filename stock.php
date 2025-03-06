@@ -308,46 +308,7 @@ if (!isset($_SESSION['user_id'])) {
   </style>
 </head>
 <body>
-  <div class="navbar">
-    <div class="logo">
-      <img src="images/logo/logo.png" alt="Logo" onerror="this.style.display='none'">
-    </div>
-    <!-- Menu -->
-    <ul class="menu">
-      <li><a href="#dashboard">Dashboard</a></li>
-      <li class="dropdown">
-        <a href="#">Vente</a>
-        <div class="dropdown-content">
-          <a href="venteStock.php">Stock</a>
-          <a href="venteEtagere.php">Etagere</a>
-        </div>
-      </li>
-      <li class="dropdown">
-        <a href="#">Stock</a>
-        <div class="dropdown-content">
-            <a href="stock.php">Stock</a>
-            <a href="versEtagere.php">Vers l'étagere</a>
-        </div>
-      </li>
-      <li class="dropdown">
-        <a href="#">SAV</a>
-        <div class="dropdown-content">
-          <a href="#sav1">Sous-menu 1</a>
-          <a href="#sav2">Sous-menu 2</a>
-        </div>
-      </li>
-      <li class="dropdown">
-        <a href="etagere.php">Étagère</a>
-      </li>
-    </ul>
-
-    <!-- Hamburger Button -->
-    <div class="hamburger" onclick="toggleMenu()">
-      <div></div>
-      <div></div>
-      <div></div>
-    </div>
-  </div>
+<?php include('menu.php'); ?>
 
   <div class="content">
     <!-- Buttons to toggle between sections -->
@@ -373,6 +334,7 @@ if (!isset($_SESSION['user_id'])) {
               <th>Accessoire</th>
               <th>Prix d'achat</th>
               <th>Prix de vente</th>
+              <th>Type</th>
            </tr>
           </thead>
         <tbody>
@@ -390,6 +352,7 @@ if (!isset($_SESSION['user_id'])) {
                   <td>{$row['accessoire']}</td>
                   <td>{$row['prixAchat']}</td>
                   <td>{$row['prixVente']}</td>
+                  <td>{$row['type']}</td>
                 </tr>";
         }
         ?>
@@ -406,6 +369,7 @@ if (!isset($_SESSION['user_id'])) {
           <th>Description</th>
           <th>Prix d'achat</th>
           <th>Prix de vente</th>
+          <th>Type</th>
         </tr>
       </thead>
       <tbody>
@@ -418,6 +382,7 @@ if (!isset($_SESSION['user_id'])) {
                   <td>{$row['description']}</td>
                   <td>{$row['prixAchat']}</td>
                   <td>{$row['prixVente']}</td>
+                  <td>{$row['type']}</td>
                 </tr>";
         }
         ?>
@@ -443,6 +408,11 @@ if (!isset($_SESSION['user_id'])) {
                 <input type="text" name="accessoire[]" placeholder="Accessoire">
                 <input type="text" name="prixAchat[]" placeholder="Prix d'achat">
                 <input type="text" name="prixVente[]" placeholder="Prix de vente">
+                <select name="type[]">
+                    <option value="Dette">Dette</option>
+                    <option value="Acquis">Acquis</option>
+                </select>
+
                 <button type="button" onclick="removeRow(this)">❌</button>
               </div>
             </div>
@@ -462,6 +432,10 @@ if (!isset($_SESSION['user_id'])) {
             <input type="text" name="description[]" placeholder="Description">
             <input type="text" name="prixAchat[]" placeholder="Prix d'achat">
             <input type="text" name="prixVente[]" placeholder="Prix de vente">
+            <select name="type[]">
+                    <option value="Dette">Dette</option>
+                    <option value="Acquis">Acquis</option>
+            </select>
             <button type="button" onclick="removeRow(this)">❌</button>
           </div>
         </div>
@@ -502,22 +476,31 @@ if (!isset($_SESSION['user_id'])) {
     var newRow = document.createElement("div");
     newRow.className = "formRow";
     newRow.innerHTML = containerId === 'formContainerOrdinateur' ?
-      '<input type="text" name="marque[]" placeholder="Marque">' +
-      '<input type="text" name="modele[]" placeholder="Modèle">' +
-      '<input type="text" name="ram[]" placeholder="RAM">' +
-      '<input type="text" name="dur[]" placeholder="Disque Dur">' +
-      '<input type="text" name="graphique[]" placeholder="Graphique">' +
-      '<input type="text" name="accessoire[]" placeholder="Accessoire">' +
-      '<input type="text" name="prixAchat[]" placeholder="Prix d'/'achat">' +
-      '<input type="text" name="prixVente[]" placeholder="Prix de vente">' +
-      '<button type="button" onclick="removeRow(this)">❌</button>' :
-      '<input type="text" name="marque[]" placeholder="Marque">' +
-      '<input type="text" name="description[]" placeholder="Description">' +
-      '<input type="text" name="prixAchat[]" placeholder="Prix d'/'achat">' +
-      '<input type="text" name="prixVente[]" placeholder="Prix de vente">' +
-      '<button type="button" onclick="removeRow(this)">❌</button>';
+        '<input type="text" name="marque[]" placeholder="Marque">' +
+        '<input type="text" name="modele[]" placeholder="Modèle">' +
+        '<input type="text" name="ram[]" placeholder="RAM">' +
+        '<input type="text" name="dur[]" placeholder="Disque Dur">' +
+        '<input type="text" name="graphique[]" placeholder="Graphique">' +
+        '<input type="text" name="accessoire[]" placeholder="Accessoire">' +
+        '<input type="text" name="prixAchat[]" placeholder="Prix d\'achat">' +  // Correction du guillemet dans le placeholder
+        '<input type="text" name="prixVente[]" placeholder="Prix de vente">' +
+        '<select name="type[]">' +
+        '<option value="Dette">Dette</option>' +
+        '<option value="Acquis">Acquis</option>' +
+        '</select>' +
+        '<button type="button" onclick="removeRow(this)">❌</button>' :
+        '<input type="text" name="marque[]" placeholder="Marque">' +
+        '<input type="text" name="description[]" placeholder="Description">' +
+        '<input type="text" name="prixAchat[]" placeholder="Prix d\'achat">' +  // Correction du guillemet dans le placeholder
+        '<input type="text" name="prixVente[]" placeholder="Prix de vente">' +
+        '<select name="type[]">' +
+        '<option value="Dette">Dette</option>' +
+        '<option value="Acquis">Acquis</option>' +
+        '</select>' +
+        '<button type="button" onclick="removeRow(this)">❌</button>';
     container.appendChild(newRow);
-  }
+}
+
 
   function removeRow(button) {
     button.parentElement.remove();
