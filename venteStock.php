@@ -415,6 +415,7 @@ button:hover {
                 <th>Disque Dur</th>
                 <th>Graphique</th>
                 <th>Accessoire</th>
+                <th>Type</th>
                 <th>Prix d'achat</th>
                 <th>Prix de vente</th>
                 <th>Prix de vente final</th> <!-- Nouvelle colonne -->
@@ -434,6 +435,7 @@ button:hover {
                 <td>{$row['disque_dur']}</td>
                 <td>{$row['graphique']}</td>
                 <td>{$row['accessoire']}</td>
+                <td>{$row['type']}</td>
                 <td>{$row['prixAchat']}</td>
                 <td>{$row['prixVente']}</td>
                 <td><input type='text' class='final' name='prixVenteFinal[]' value='' placeholder='Prix Final'></td> <!-- Champ input -->
@@ -456,6 +458,7 @@ button:hover {
                 <th>Sélection</th>
                 <th>Marque</th>
                 <th>Description</th>
+                <th>Type</th>
                 <th>Prix d'achat</th>
                 <th>Prix de vente</th>
                 <th>Prix de vente final</th> <!-- Nouvelle colonne -->
@@ -471,6 +474,7 @@ button:hover {
                 <td><input type='checkbox' name='selectAutres[]' value='{$row['id']}'></td>
                 <td>{$row['marque']}</td>
                 <td>{$row['description']}</td>
+                <td>{$row['type']}</td>
                 <td>{$row['prixAchat']}</td>
                 <td>{$row['prixVente']}</td>
                 <td><input type='text' class='final' name='prixVenteFinal[]' value='' placeholder='Prix Final'></td> <!-- Champ input -->
@@ -558,29 +562,20 @@ function searchTable(type) {
   
   function transferer(type) {
   var selectedItems = [];
-  var finalPrices = [];
-  
   // Sélection des éléments en fonction du type (ordinateurs ou autres matériels)
   var checkboxes;
   var finalPriceInputs;
+
   if (type === 'ordinateur') {
     checkboxes = document.querySelectorAll('input[name="selectOrdinateur[]"]:checked');
-    finalPriceInputs = document.querySelectorAll('input[name="prixVenteFinal[]"]');
   } else {
     checkboxes = document.querySelectorAll('input[name="selectAutres[]"]:checked');
-    finalPriceInputs = document.querySelectorAll('input[name="prixVenteFinal[]"]');
   }
 
-  // Debugging: Log the checkboxes and price inputs
-  console.log('Checkboxes:', checkboxes);
-  console.log('Final Price Inputs:', finalPriceInputs);
-  
-  checkboxes.forEach((checkbox, index) => {
+  checkboxes.forEach((checkbox) => {
     var row = checkbox.closest('tr'); // Trouve la ligne correspondante
-    var finalPrice = finalPriceInputs[index].value; // Récupère le prix final
-
-    console.log('Row:', row);
-    console.log('Final Price:', finalPrice);
+    var finalPriceInput = row.querySelector('input[name="prixVenteFinal[]"]'); // Récupère l'input "prixVenteFinal" de cette ligne
+    var finalPrice = finalPriceInput ? finalPriceInput.value : '';
 
     if (finalPrice) {  // Si le prix final est renseigné
       var item = {
@@ -596,13 +591,15 @@ function searchTable(type) {
         item.disqueDur = row.cells[4].innerText;
         item.graphique = row.cells[5].innerText;
         item.accessoire = row.cells[6].innerText;
-        item.prixAchat = row.cells[7].innerText;
-        item.prixVente = row.cells[8].innerText;
+        item.type = row.cells[7].innerText;
+        item.prixAchat = row.cells[8].innerText;
+        item.prixVente = row.cells[9].innerText;
       } else {
         item.marque = row.cells[1].innerText;
         item.description = row.cells[2].innerText;
-        item.prixAchat = row.cells[3].innerText;
-        item.prixVente = row.cells[4].innerText;
+        item.type = row.cells[3].innerText;
+        item.prixAchat = row.cells[4].innerText;
+        item.prixVente = row.cells[5].innerText;
       }
 
       selectedItems.push(item);
@@ -625,6 +622,7 @@ function searchTable(type) {
     alert('Veuillez sélectionner des articles et entrer un prix final.');
   }
 }
+
 
 
 

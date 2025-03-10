@@ -24,13 +24,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($user) {
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['username'] = $user['name'];
-            header("Location: stock.php"); // Redirection après connexion
+            header("Location: stock.php");
             exit();
         } else {
-            echo "<script>alert('Nom d\'utilisateur ou mot de passe incorrect');</script>";
+            $_SESSION['error'] = "Nom d'utilisateur ou mot de passe incorrect.";
         }
     } else {
-        echo "<script>alert('Veuillez remplir tous les champs');</script>";
+        $_SESSION['error'] = "Veuillez remplir tous les champs.";
     }
+    header("Location: index.php");
+    exit();
 }
 ?>

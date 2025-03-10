@@ -16,8 +16,8 @@ try {
   foreach ($items as $item) {
     if ($type === 'ordinateur') {
       // Insertion des données dans la table ordinateurs_vente
-      $stmt = $pdo->prepare("INSERT INTO ordinateurs_vente (id, marque, modele, ram, disque_dur, graphique, accessoire, prixAchat, prixVente, prixVenteFinal, typeVente)
-                              VALUES (:id, :marque, :modele, :ram, :disque_dur, :graphique, :accessoire, :prixAchat, :prixVente, :prixVenteFinal, :typeVente)");
+      $stmt = $pdo->prepare("INSERT INTO ordinateurs_vente (id, marque, modele, ram, disque_dur, graphique, accessoire, type,  prixAchat, prixVente, prixVenteFinal, typeVente)
+                              VALUES (:id, :marque, :modele, :ram, :disque_dur, :graphique, :accessoire, :type, :prixAchat, :prixVente, :prixVenteFinal, :typeVente)");
 
       $stmt->execute([
         ':id' => $item['id'],  // Inclure l'ID dans l'insertion
@@ -27,6 +27,7 @@ try {
         ':disque_dur' => $item['disqueDur'],
         ':graphique' => $item['graphique'],
         ':accessoire' => $item['accessoire'],
+        ':type' => $item['type'],
         ':prixAchat' => $item['prixAchat'],
         ':prixVente' => $item['prixVente'],
         ':prixVenteFinal' => $item['prixFinal'],
@@ -34,13 +35,14 @@ try {
       ]);
     } elseif ($type === 'autres') {
       // Insertion des données dans la table autres_materiels_vente
-      $stmt = $pdo->prepare("INSERT INTO autres_materiels_vente (id, marque, description, prixAchat, prixVente, prixVenteFinal, typeVente)
-                              VALUES (:id, :marque, :description, :prixAchat, :prixVente, :prixVenteFinal, :typeVente)");
+      $stmt = $pdo->prepare("INSERT INTO autres_materiels_vente (id, marque, description, type, prixAchat, prixVente, prixVenteFinal, typeVente)
+                              VALUES (:id, :marque, :description, :type, :prixAchat, :prixVente, :prixVenteFinal, :typeVente)");
 
       $stmt->execute([
         ':id' => $item['id'],  // Inclure l'ID dans l'insertion
         ':marque' => $item['marque'],
         ':description' => $item['description'],
+        ':type' => $item['type'],
         ':prixAchat' => $item['prixAchat'],
         ':prixVente' => $item['prixVente'],
         ':prixVenteFinal' => $item['prixFinal'],

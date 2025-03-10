@@ -1,4 +1,5 @@
 <?php
+session_start();
 $host = 'localhost';
 $dbname = 'madistor';
 $username = 'root';
@@ -10,6 +11,12 @@ try {
 } catch (PDOException $e) {
     die("Erreur de connexion : " . $e->getMessage());
 }
+
+$error_message = "";
+if (isset($_SESSION['error'])) {
+    $error_message = $_SESSION['error'];
+    unset($_SESSION['error']); // Supprimer l'erreur après affichage
+}
 ?>
 
 <!DOCTYPE html>
@@ -19,44 +26,70 @@ try {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Connexion</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
         body {
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background-color: #f4f4f4;
-            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #8b0000, #000);
         }
         .login-container {
             background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
             text-align: center;
-            width: 300px;
+            width: 350px;
+            transition: transform 0.3s;
+        }
+        .login-container:hover {
+            transform: scale(1.02);
         }
         .login-container img {
-            width: 80px;
-            margin-bottom: 20px;
+            width: 100px;
+            margin-bottom: 15px;
+        }
+        .login-container h2 {
+            color: #8b0000;
+            margin-bottom: 15px;
         }
         .login-container input {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
+            border: 1px solid #8b0000;
+            border-radius: 8px;
+            outline: none;
+            transition: all 0.3s;
+        }
+        .login-container input:focus {
+            border-color: #8b0000;
+            box-shadow: 0 0 5px rgba(139, 0, 0, 0.5);
         }
         .login-container button {
             width: 100%;
-            padding: 10px;
-            background: #007bff;
+            padding: 12px;
+            background: #8b0000;
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
             cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
         }
         .login-container button:hover {
-            background: #0056b3;
+            background: #a00000;
+        }
+        .error-message {
+            color: red;
+            margin-bottom: 10px;
+            font-size: 14px;
         }
     </style>
 </head>
@@ -64,6 +97,11 @@ try {
     <div class="login-container">
         <img src="images/logo/logo.png" alt="Logo">
         <h2>Connexion</h2>
+
+        <?php if (!empty($error_message)): ?>
+            <p class="error-message"><?php echo $error_message; ?></p>
+        <?php endif; ?>
+
         <form action="login.php" method="POST">
             <input type="text" name="username" placeholder="Nom d'utilisateur" required>
             <input type="password" name="password" placeholder="Mot de passe" required>

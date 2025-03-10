@@ -10,7 +10,7 @@ if (!isset($_SESSION['user_id'])) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vente Etagere</title>
+  <title>Remboursement</title>
   <style>
     body {
       margin: 0;
@@ -395,96 +395,105 @@ button:hover {
   <div class="content">
     <!-- Liste Stock Section -->
     <div id="listStock" class="section">
-      <h2>Liste des matériels sur étagères</h2>
+      <h2>Liste des matériels à remboursé</h2>
       <button class="btn" onclick="toggleList('ordinateurList')">Ordinateurs</button>
       <button class="btn" onclick="toggleList('autresList')">Autres Matériels</button>
 
-      <div id="ordinateurList" class="stock-list" style="display: none;">
-    <h3>Liste des Ordinateurs</h3>
-    <input type="text" id="searchOrdinateurs" onkeyup="searchTable('ordinateur')" placeholder="Rechercher dans la liste des ordinateurs" class="search-bar">
-    <button onclick="transferer('ordinateur')" style="background-color: #4CAF50; color: white; padding: 15px 32px; text-align: center; font-size: 16px; border: none; border-radius: 4px; cursor: pointer; transition: background-color 0.3s ease;">
-    Transférer
-    </button>    
-  <table border="1">
-        <thead>
-            <tr>
-              <th>Sélection</th>
-                <th>Marque</th>
-                <th>Modèle</th>
-                <th>RAM</th>
-                <th>Disque Dur</th>
-                <th>Graphique</th>
-                <th>Accessoire</th>
-                <th>Type</th>
-                <th>Prix d'achat</th>
-                <th>Prix de vente</th>
-                <th>Prix de vente final</th> <!-- Nouvelle colonne -->
-            </tr>
-        </thead>
-        <tbody>
-    <?php
-                require 'connexion.php';
-    $sql = "SELECT * FROM ordinateurs_etagere";
-    $result = $pdo->query($sql);
-    while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
-        echo "<tr>
-                <td><input type='checkbox' name='selectOrdinateur[]' value='{$row['id']}'></td>
-                <td>{$row['marque']}</td>
-                <td>{$row['modele']}</td>
-                <td>{$row['ram']}</td>
-                <td>{$row['disque_dur']}</td>
-                <td>{$row['graphique']}</td>
-                <td>{$row['accessoire']}</td>
-                <td>{$row['type']}</td>
-                <td>{$row['prixAchat']}</td>
-                <td>{$row['prixVente']}</td>
-                <td><input type='text' class='final' name='prixVenteFinal[]' value='' placeholder='Prix Final'></td> <!-- Champ input -->
-              </tr>";
-    }
-    ?>
-</tbody>
+      <form action="rembourser.php" method="POST">
+    <div id="ordinateurList" class="stock-list" style="display: none;">
+        <h3>Liste des Ordinateurs</h3>
+        <input type="text" id="searchOrdinateurs" onkeyup="searchTable('ordinateur')" placeholder="Rechercher dans la liste des ordinateurs" class="search-bar">
+        
+        <!-- Bouton "Rembourser" à l'intérieur du formulaire -->
+        <button type="submit" name="type" value="ordinateur" style="background-color: #4CAF50; color: white; padding: 15px 32px; text-align: center; font-size: 16px; border: none; border-radius: 4px; cursor: pointer; transition: background-color 0.3s ease;">
+            Rembourser
+        </button>
+        
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Sélection</th>
+                    <th>Marque</th>
+                    <th>Modèle</th>
+                    <th>RAM</th>
+                    <th>Disque Dur</th>
+                    <th>Graphique</th>
+                    <th>Accessoire</th>
+                    <th>Type</th>
+                    <th>Prix d'achat</th>
+                    <th>Prix de vente</th>
+                    <th>Prix de vente final</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                    require 'connexion.php';
+                    $sql = "SELECT * FROM ordinateurs_vente WHERE type = 'Dette'";
+                    $result = $pdo->query($sql);
+                    while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+                        echo "<tr>
+                                <td><input type='checkbox' name='selectOrdinateur[]' value='{$row['id']}'></td>
+                                <td>{$row['marque']}</td>
+                                <td>{$row['modele']}</td>
+                                <td>{$row['ram']}</td>
+                                <td>{$row['disque_dur']}</td>
+                                <td>{$row['graphique']}</td>
+                                <td>{$row['accessoire']}</td>
+                                <td>{$row['type']}</td>
+                                <td>{$row['prixAchat']}</td>
+                                <td>{$row['prixVente']}</td>
+                                <td>{$row['prixVenteFinal']}</td>
+                              </tr>";
+                    }
+                ?>
+            </tbody>
+        </table>
+    </div>
+</form>
 
-    </table>
-</div>
-
-<div id="autresList" class="stock-list" style="display: none;">
-    <h3>Liste des Autres Matériels</h3>
-    <input type="text" id="searchAutres" onkeyup="searchTable('autres')" placeholder="Rechercher dans la liste des autres matériels" class="search-bar">
-    <button onclick="transferer('autres')" style="background-color: #4CAF50; color: white; padding: 15px 32px; text-align: center; font-size: 16px; border: none; border-radius: 4px; cursor: pointer; transition: background-color 0.3s ease;">
-      Transférer</button>
-    <table border="1">
-        <thead>
-            <tr>
-                <th>Sélection</th>
-                <th>Marque</th>
-                <th>Description</th>
-                <th>Type</th>
-                <th>Prix d'achat</th>
-                <th>Prix de vente</th>
-                <th>Prix de vente final</th> <!-- Nouvelle colonne -->
-            </tr>
-        </thead>
-        <tbody>
-    <?php
-    require 'connexion.php';
-    $sql = "SELECT * FROM autres_materiels_etagere";
-    $result = $pdo->query($sql);
-    while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
-        echo "<tr>
-                <td><input type='checkbox' name='selectAutres[]' value='{$row['id']}'></td>
-                <td>{$row['marque']}</td>
-                <td>{$row['description']}</td>
-                <td>{$row['type']}</td>
-                <td>{$row['prixAchat']}</td>
-                <td>{$row['prixVente']}</td>
-                <td><input type='text' class='final' name='prixVenteFinal[]' value='' placeholder='Prix Final'></td> <!-- Champ input -->
-              </tr>";
-    }
-    ?>
-</tbody>
-
-    </table>
-</div>
+<form action="rembourser.php" method="POST">
+    <div id="autresList" class="stock-list" style="display: none;">
+        <h3>Liste des Autres Matériels</h3>
+        <input type="text" id="searchAutres" onkeyup="searchTable('autres')" placeholder="Rechercher dans la liste des autres matériels" class="search-bar">
+        
+        <!-- Bouton "Rembourser" à l'intérieur du formulaire -->
+        <button type="submit" name="type" value="autres" style="background-color: #4CAF50; color: white; padding: 15px 32px; text-align: center; font-size: 16px; border: none; border-radius: 4px; cursor: pointer; transition: background-color 0.3s ease;">
+            Rembourser
+        </button>
+        
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Sélection</th>
+                    <th>Marque</th>
+                    <th>Description</th>
+                    <th>Type</th>
+                    <th>Prix d'achat</th>
+                    <th>Prix de vente</th>
+                    <th>Prix de vente final</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                    require 'connexion.php';
+                    $sql = "SELECT * FROM autres_materiels_vente WHERE type = 'Dette'";
+                    $result = $pdo->query($sql);
+                    while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+                        echo "<tr>
+                                <td><input type='checkbox' name='selectAutres[]' value='{$row['id']}'></td>
+                                <td>{$row['marque']}</td>
+                                <td>{$row['description']}</td>
+                                <td>{$row['type']}</td>
+                                <td>{$row['prixAchat']}</td>
+                                <td>{$row['prixVente']}</td>
+                                <td>{$row['prixVenteFinal']}</td>
+                              </tr>";
+                    }
+                ?>
+            </tbody>
+        </table>
+    </div>
+</form>
 </div>
   <script>
     // Fonction pour filtrer les lignes des tableaux en fonction de la barre de recherche
@@ -559,78 +568,6 @@ function searchTable(type) {
     document.getElementById('ordinateurList').style.display = (listId === 'ordinateurList') ? 'block' : 'none';
     document.getElementById('autresList').style.display = (listId === 'autresList') ? 'block' : 'none';
   }
-  
-  function transferer(type) {
-  var selectedItems = [];
-  var checkboxes;
-  var finalPriceInputs;
-
-  // Sélection des éléments en fonction du type (ordinateurs ou autres matériels)
-  if (type === 'ordinateur') {
-    checkboxes = document.querySelectorAll('input[name="selectOrdinateur[]"]:checked');
-    finalPriceInputs = document.querySelectorAll('input[name="prixVenteFinal[]"]'); // Récupérer tous les champs "prix final"
-  } else {
-    checkboxes = document.querySelectorAll('input[name="selectAutres[]"]:checked');
-    finalPriceInputs = document.querySelectorAll('input[name="prixVenteFinal[]"]'); // Récupérer tous les champs "prix final"
-  }
-
-  // Parcourir toutes les cases à cocher sélectionnées
-  checkboxes.forEach((checkbox, index) => {
-    var row = checkbox.closest('tr'); // Trouver la ligne de la case à cocher sélectionnée
-    var finalPrice = finalPriceInputs[index].value; // Récupérer le prix final de la ligne correspondante
-
-    if (finalPrice) {  // Si un prix final est entré
-      var item = {
-        id: checkbox.value, // Ajouter l'ID de l'article sélectionné
-        prixFinal: finalPrice // Ajouter le prix final
-      };
-
-      // Récupérer les autres informations selon le type de matériel
-      if (type === 'ordinateur') {
-        item.marque = row.cells[1].innerText;
-        item.modele = row.cells[2].innerText;
-        item.ram = row.cells[3].innerText;
-        item.disqueDur = row.cells[4].innerText;
-        item.graphique = row.cells[5].innerText;
-        item.accessoire = row.cells[6].innerText;
-        item.type = row.cells[7].innerText;
-        item.prixAchat = row.cells[8].innerText;
-        item.prixVente = row.cells[9].innerText;
-      } else {
-        item.marque = row.cells[1].innerText;
-        item.description = row.cells[2].innerText;
-        item.type = row.cells[3].innerText;
-        item.prixAchat = row.cells[4].innerText;
-        item.prixVente = row.cells[5].innerText;
-      }
-
-      selectedItems.push(item); // Ajouter l'article sélectionné à la liste
-    }
-  });
-
-  // Vérifier si des articles ont été sélectionnés
-  if (selectedItems.length > 0) {
-    // Envoi des données via AJAX
-    var xhr = new XMLHttpRequest();
-    xhr.open('POST', 'transfertEtagere.php', true);
-    xhr.setRequestHeader('Content-Type', 'application/json'); // Assurez-vous que les données sont envoyées en JSON
-
-    xhr.onreadystatechange = function() {
-      if (xhr.readyState === 4 && xhr.status === 200) {
-        alert('Transfert réussi!');
-        location.reload(); // Recharger la page après un transfert réussi
-      }
-    };
-
-    // Convertir l'objet en JSON et envoyer
-    xhr.send(JSON.stringify({ items: selectedItems, type: type }));
-  } else {
-    alert('Veuillez sélectionner des articles et entrer un prix final.');
-  }
-}
-
-
-
-  </script>
+</script>
 </body>
 </html>
